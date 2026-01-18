@@ -1,39 +1,48 @@
-# newapi-homepage
+# MOLI API Homepage
 
-Modern dark theme homepage template for New API - Ready to use with Markdown embedding
+现代深色主题首页模板，专为 New API 设计。
 
-## Files
+## 文件说明
 
-| File | Description | Usage |
-|------|-------------|-------|
-| `homepage.html` | Full HTML page with Canvas animation | Use with iframe (paste URL in New API) |
-| `homepage-markdown.md` | Markdown compatible version | Copy & paste directly into New API homepage content |
-| `homepage-newapi.html` | HTML fragment version | Alternative for direct embedding |
+| 文件 | 说明 |
+|------|------|
+| `index.html` | 主页（支持 iframe 嵌入） |
+| `logo-A1.svg` | Logo - 3D 立体风格 |
+| `logo-C2.svg` | Logo - 多层线框风格 |
 
-## Usage
+## 使用方法
 
-### Method 1: Markdown (Recommended)
+### 首页设置
 
-1. Copy the content of `homepage-markdown.md`
-2. Paste into New API **Settings → Homepage Content**
-3. Save
+1. 在 New API 后台 → **设置** → **首页内容**
+2. 粘贴 GitHub Pages 链接：
+   ```
+   https://moli721.github.io/newapi-homepage/
+   ```
+3. 保存
 
-### Method 2: iframe (For full features)
+### Logo 设置
 
-1. Enable GitHub Pages for this repo
-2. Copy the GitHub Pages URL (e.g., `https://moli721.github.io/newapi-homepage/homepage.html`)
-3. Paste the URL into New API **Settings → Homepage Content**
-4. Save
+在 New API 后台 → **设置** → **Logo**，粘贴以下链接：
 
-## Preview
+**3D 立体风格：**
+```
+https://raw.githubusercontent.com/moli721/newapi-homepage/main/logo-A1.svg
+```
 
-The homepage includes:
-- Modern glassmorphism design
-- Animated gradient backgrounds
-- Model showcase badges
-- Feature cards
-- Quick start guide
-- Responsive layout
+**多层线框风格：**
+```
+https://raw.githubusercontent.com/moli721/newapi-homepage/main/logo-C2.svg
+```
+
+## 特性
+
+- 现代玻璃拟态设计
+- 动态渐变背景
+- AI 模型展示
+- 功能卡片
+- 响应式布局
+- 深色主题适配
 
 ## License
 
