@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New API - 统一 API 管理平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3B82F6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --secondary: #8B5CF6;
+            --secondary-glow: rgba(139, 92, 246, 0.4);
+            --accent: #06B6D4;
+            --accent-glow: rgba(6, 182, 212, 0.4);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --bg-dark: #030712;
+            --bg-darker: #000000;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --bg-card-hover: rgba(30, 41, 59, 0.8);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border: rgba(148, 163, 184, 0.1);
+            --border-glow: rgba(59, 130, 246, 0.3);
+            --gradient-main: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #06B6D4 100%);
+            --gradient-button: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            --gradient-card: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        /* ===== 背景系统 ===== */
+        .bg-system {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* 基础渐变层 */
+        .bg-base {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 30% at 10% 60%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+        }
+
+        /* 网格层 */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 70%);
+        }
+
+        /* 动态网络节点 Canvas */
+        #network-canvas {
+            position: absolute;
+            inset: 0;
+            opacity: 0.6;
+        }
+
+        /* 光晕脉冲 */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 600px;
+            height: 600px;
+            background: rgba(59, 130, 246, 0.15);
+            top: -200px;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .glow-orb-2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(139, 92, 246, 0.12);
+            bottom: -150px;
+            right: 5%;
+            animation-delay: -7s;
+        }
+
+        .glow-orb-3 {
+            width: 400px;
+            height: 400px;
+            background: rgba(6, 182, 212, 0.1);
+            top: 40%;
+            left: -100px;
+            animation-delay: -14s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+            25% { transform: translate(30px, -20px) scale(1.05); opacity: 0.8; }
+            50% { transform: translate(-20px, 30px) scale(0.95); opacity: 0.5; }
+            75% { transform: translate(-30px, -10px) scale(1.02); opacity: 0.7; }
+        }
+
+        /* 扫描线效果 */
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), rgba(6, 182, 212, 0.3), transparent);
+            animation: scanLine 8s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes scanLine {
+            0% { top: -2px; }
+            100% { top: 100%; }
+        }
+
+        /* 浮动代码装饰 */
+        .floating-code {
+            position: absolute;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: rgba(59, 130, 246, 0.15);
+            white-space: nowrap;
+            pointer-events: none;
+            animation: floatCode 30s linear infinite;
+        }
+
+        .floating-code:nth-child(1) { top: 15%; left: 5%; animation-delay: 0s; }
+        .floating-code:nth-child(2) { top: 25%; right: 8%; animation-delay: -5s; }
+        .floating-code:nth-child(3) { top: 60%; left: 3%; animation-delay: -10s; }
+        .floating-code:nth-child(4) { top: 75%; right: 5%; animation-delay: -15s; }
+        .floating-code:nth-child(5) { top: 45%; left: 85%; animation-delay: -20s; }
+
+        @keyframes floatCode {
+            0%, 100% { opacity: 0.1; transform: translateY(0) rotate(0deg); }
+            50% { opacity: 0.25; transform: translateY(-20px) rotate(1deg); }
+        }
+
+        /* ===== 导航栏 ===== */
+        .navbar {
+            position: fixed;
+            top: 1.25rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 2.5rem);
+            max-width: 1200px;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 0 1.5rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            box-shadow:
+                0 4px 30px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-main);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--bg-glass);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--border-glow);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .nav-btn-primary {
+            background: var(--gradient-button);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.25rem;
+            width: auto;
+            font-weight: 600;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .nav-btn-primary:hover {
+            background: var(--gradient-button);
+            color: white;
+            box-shadow: 0 6px 25px var(--primary-glow);
+        }
+
+        /* ===== 主容器 ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ===== Hero 区域 ===== */
+        .hero {
+            text-align: center;
+            padding: 11rem 0 5rem;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 100px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .hero-badge-text {
+            background: linear-gradient(90deg, var(--text-secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--success); }
+            50% { opacity: 0.6; box-shadow: 0 0 20px var(--success); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.75rem, 8vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .hero h1 .text-line {
+            display: block;
+        }
+
+        .hero h1 .gradient-text {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        .hero h1 .gradient-text::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-main);
+            border-radius: 2px;
+            opacity: 0.5;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 2.5rem;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+            line-height: 1.7;
+        }
+
+        .hero-subtitle strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .btn {
+            padding: 0.9rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--gradient-button);
+            color: #fff;
+            box-shadow: 0 4px 25px var(--primary-glow);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 35px var(--primary-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--border-glow);
+            transform: translateY(-3px);
+        }
+
+        .btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* API 代码预览块 */
+        .hero-code-preview {
+            max-width: 700px;
+            margin: 4rem auto 0;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .code-window {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .code-window-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-window-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-window-dot:nth-child(1) { background: #FF5F57; }
+        .code-window-dot:nth-child(2) { background: #FFBD2E; }
+        .code-window-dot:nth-child(3) { background: #28CA41; }
+
+        .code-window-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .code-window-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .code-copy-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+
+        .code-copy-btn:hover {
+            color: var(--primary);
+            border-color: var(--border-glow);
+        }
+
+        .code-copy-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .code-window-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+        }
+
+        .code-line-number {
+            color: var(--text-muted);
+            width: 2rem;
+            text-align: right;
+            margin-right: 1.5rem;
+            user-select: none;
+            opacity: 0.5;
+        }
+
+        .code-keyword { color: #C792EA; }
+        .code-string { color: #A5D6FF; }
+        .code-url { color: #7DD3FC; }
+        .code-comment { color: #64748B; }
+        .code-key { color: #7DD3FC; }
+        .code-value { color: #A5D6FF; }
+        .code-bracket { color: #CBD5E1; }
+        .code-method { color: #F59E0B; }
+
+        /* 响应状态指示器 */
+        .response-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .response-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .response-time {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .response-model {
+            color: var(--accent);
+            font-size: 0.8rem;
+            margin-left: auto;
+            padding: 0.25rem 0.75rem;
+            background: rgba(6, 182, 212, 0.1);
+            border-radius: 100px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        /* ===== 统计数据 ===== */
+        .stats {
+            padding: 3rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            background: var(--gradient-card);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ===== 功能卡片 ===== */
+        .features {
+            padding: 5rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            margin-bottom: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-tag svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .section-title {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.35s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-main);
+            transform: scaleX(0);
+            transition: transform 0.35s ease;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gradient-card);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .feature-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-6px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover::after {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-main);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px var(--primary-glow);
+            transition: transform 0.35s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(-3deg);
+        }
+
+        .feature-icon svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .feature-desc {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* ===== 快速开始 ===== */
+        .quick-start {
+            padding: 5rem 0;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .step:hover {
+            border-color: var(--border-glow);
+            background: var(--bg-card-hover);
+            transform: translateX(8px);
+        }
+
+        .step-number {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-main);
+            color: #fff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px var(--secondary-glow);
+        }
+
+        .step-content h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.35rem;
+            color: var(--text-primary);
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .steps-visual {
+            position: relative;
+        }
+
+        .visual-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .visual-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .visual-card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-main);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visual-card-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .visual-card-info h4 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .visual-card-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .api-key-display {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .api-key-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .api-key-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        .api-key-copy {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .api-key-copy:hover {
+            color: var(--primary);
+            border-color: var(--border-glow);
+        }
+
+        .api-key-copy svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .usage-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .usage-stat {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .usage-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .usage-stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .usage-stat-value span {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* ===== 支持的模型 ===== */
+        .models {
+            padding: 5rem 0;
+        }
+
+        .models-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .model-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .model-badge:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .model-badge-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .model-badge-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .model-openai .model-badge-icon { background: #10A37F; color: white; }
+        .model-claude .model-badge-icon { background: #D97757; color: white; }
+        .model-gemini .model-badge-icon { background: #4285F4; color: white; }
+        .model-llama .model-badge-icon { background: #7C3AED; color: white; }
+        .model-mistral .model-badge-icon { background: #FF7000; color: white; }
+        .model-qwen .model-badge-icon { background: #615EFF; color: white; }
+
+        /* ===== 底部 ===== */
+        .footer {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: 4rem 2rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            max-width: 300px;
+        }
+
+        .footer-links h4 {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+        }
+
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .footer-copy a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .footer-social a:hover {
+            color: var(--primary);
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+        }
+
+        .footer-social svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .footer-main {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                top: 0.75rem;
+                width: calc(100% - 1.5rem);
+                padding: 0 1rem;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .hero {
+                padding: 9rem 0 4rem;
+            }
+
+            .hero h1 {
+                font-size: 2.25rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-code-preview {
+                margin-top: 2.5rem;
+            }
+
+            .code-window-body {
+                font-size: 0.75rem;
+                padding: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .footer-main {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .floating-code {
+                display: none;
+            }
+        }
+
+        /* 减少动画 - 无障碍 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            #network-canvas {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景系统 -->
+    <div class="bg-system">
+        <div class="bg-base"></div>
+        <div class="bg-grid"></div>
+        <canvas id="network-canvas"></canvas>
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+        <div class="scan-line"></div>
+
+        <!-- 浮动代码装饰 -->
+        <div class="floating-code">const response = await api.chat()</div>
+        <div class="floating-code">{"model": "gpt-4", "stream": true}</div>
+        <div class="floating-code">Authorization: Bearer sk-***</div>
+        <div class="floating-code">return res.json({ success: true })</div>
+        <div class="floating-code">async function* streamChat() {}</div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                </svg>
+            </div>
+            <span class="logo-text">New API</span>
+        </div>
+
+        <div class="nav-center">
+            <a href="#features" class="nav-link">功能</a>
+            <a href="/docs" class="nav-link">文档</a>
+            <a href="/pricing" class="nav-link">定价</a>
+            <a href="/status" class="nav-link">状态</a>
+        </div>
+
+        <div class="nav-actions">
+            <button class="nav-btn" title="系统公告">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+            </button>
+            <button class="nav-btn" title="切换主题">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                </svg>
+            </button>
+            <a href="/login" class="nav-btn nav-btn-primary">登录</a>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- Hero 区域 -->
+        <section class="hero">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span class="hero-badge-text">v3.0 全新发布 · 开源免费</span>
+            </div>
+            <h1>
+                <span class="text-line">统一管理您的</span>
+                <span class="text-line"><span class="gradient-text">AI 模型接口</span></span>
+            </h1>
+            <p class="hero-subtitle">
+                企业级 API 分发与管理平台，<strong>一次接入</strong>即可调用
+                OpenAI、Claude、Gemini 等 <strong>50+ 主流模型</strong>，
+                完全兼容 OpenAI 接口格式
+            </p>
+            <div class="cta-buttons">
+                <a href="/register" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                    </svg>
+                    免费开始
+                </a>
+                <a href="https://github.com/QuantumNous/new-api" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    Star on GitHub
+                </a>
+            </div>
+
+            <!-- API 代码预览 -->
+            <div class="hero-code-preview">
+                <div class="code-window">
+                    <div class="code-window-header">
+                        <div class="code-window-dots">
+                            <div class="code-window-dot"></div>
+                            <div class="code-window-dot"></div>
+                            <div class="code-window-dot"></div>
+                        </div>
+                        <div class="code-window-title">api-request.sh</div>
+                        <div class="code-window-actions">
+                            <button class="code-copy-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+                                </svg>
+                                复制
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-window-body">
+                        <div class="code-line"><span class="code-line-number">1</span><span class="code-keyword">curl</span> <span class="code-url">https://api.new-api.com/v1/chat/completions</span> \</div>
+                        <div class="code-line"><span class="code-line-number">2</span>  -H <span class="code-string">"Content-Type: application/json"</span> \</div>
+                        <div class="code-line"><span class="code-line-number">3</span>  -H <span class="code-string">"Authorization: Bearer $API_KEY"</span> \</div>
+                        <div class="code-line"><span class="code-line-number">4</span>  -d <span class="code-string">'</span><span class="code-bracket">{</span></div>
+                        <div class="code-line"><span class="code-line-number">5</span>    <span class="code-key">"model"</span>: <span class="code-value">"gpt-4o"</span>,</div>
+                        <div class="code-line"><span class="code-line-number">6</span>    <span class="code-key">"messages"</span>: <span class="code-bracket">[{</span><span class="code-key">"role"</span>: <span class="code-value">"user"</span>, <span class="code-key">"content"</span>: <span class="code-value">"Hello!"</span><span class="code-bracket">}]</span></div>
+                        <div class="code-line"><span class="code-line-number">7</span>  <span class="code-bracket">}</span><span class="code-string">'</span></div>
+                        <div class="response-indicator">
+                            <div class="response-status">
+                                <span class="status-dot"></span>
+                                <span style="color: var(--success);">200 OK</span>
+                            </div>
+                            <span class="response-time">响应时间: 127ms</span>
+                            <span class="response-model">gpt-4o</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据统计 -->
+        <section class="stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                        </svg>
+                    </div>
+                    <div class="stat-value">50+</div>
+                    <div class="stat-label">支持模型</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                        </svg>
+                    </div>
+                    <div class="stat-value">99.9%</div>
+                    <div class="stat-label">服务可用性</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                        </svg>
+                    </div>
+                    <div class="stat-value">&lt;50ms</div>
+                    <div class="stat-label">平均延迟</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                        </svg>
+                    </div>
+                    <div class="stat-value">10K+</div>
+                    <div class="stat-label">活跃用户</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 支持的模型 -->
+        <section class="models">
+            <div class="section-header">
+                <span class="section-tag">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                    </svg>
+                    AI Models
+                </span>
+                <h2 class="section-title">支持主流 AI 模型</h2>
+                <p class="section-desc">统一接口格式，无缝切换不同模型</p>
+            </div>
+            <div class="models-grid">
+                <div class="model-badge model-openai">
+                    <div class="model-badge-icon">AI</div>
+                    <span class="model-badge-name">GPT-4o</span>
+                </div>
+                <div class="model-badge model-openai">
+                    <div class="model-badge-icon">AI</div>
+                    <span class="model-badge-name">GPT-4 Turbo</span>
+                </div>
+                <div class="model-badge model-claude">
+                    <div class="model-badge-icon">C</div>
+                    <span class="model-badge-name">Claude 3.5 Sonnet</span>
+                </div>
+                <div class="model-badge model-claude">
+                    <div class="model-badge-icon">C</div>
+                    <span class="model-badge-name">Claude 3 Opus</span>
+                </div>
+                <div class="model-badge model-gemini">
+                    <div class="model-badge-icon">G</div>
+                    <span class="model-badge-name">Gemini 1.5 Pro</span>
+                </div>
+                <div class="model-badge model-llama">
+                    <div class="model-badge-icon">L</div>
+                    <span class="model-badge-name">Llama 3.1 405B</span>
+                </div>
+                <div class="model-badge model-mistral">
+                    <div class="model-badge-icon">M</div>
+                    <span class="model-badge-name">Mistral Large</span>
+                </div>
+                <div class="model-badge model-qwen">
+                    <div class="model-badge-icon">Q</div>
+                    <span class="model-badge-name">Qwen2 72B</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能特性 -->
+        <section id="features" class="features">
+            <div class="section-header">
+                <span class="section-tag">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    Features
+                </span>
+                <h2 class="section-title">强大的功能特性</h2>
+                <p class="section-desc">为开发者和企业打造的一站式 AI 接口管理平台</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">多模型聚合</h3>
+                    <p class="feature-desc">一个 API 调用所有主流 AI 模型，OpenAI 兼容格式，无需修改现有代码即可接入。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">精细化计费</h3>
+                    <p class="feature-desc">按 Token 计费，支持预付费和后付费模式，实时额度监控，精准控制成本。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">密钥轮询</h3>
+                    <p class="feature-desc">支持多密钥负载均衡，自动故障转移，智能路由选择最优节点。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">数据分析</h3>
+                    <p class="feature-desc">详细的调用日志和数据可视化看板，帮助您深入了解 API 使用情况。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">流式响应</h3>
+                    <p class="feature-desc">完整支持 SSE 流式传输，实时返回生成内容，提升用户体验。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">安全可靠</h3>
+                    <p class="feature-desc">企业级权限管控，完整审计日志，数据加密传输，保障您的数据安全。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 快速开始 -->
+        <section class="quick-start">
+            <div class="section-header">
+                <span class="section-tag">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+                    </svg>
+                    Quick Start
+                </span>
+                <h2 class="section-title">三步快速上手</h2>
+                <p class="section-desc">简单几步，即刻开启 AI 之旅</p>
+            </div>
+            <div class="steps-container">
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>注册账号</h3>
+                            <p>创建账号并登录控制台，获取专属 API 访问权限</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>创建 API Key</h3>
+                            <p>在控制台生成 API Key，配置调用权限和额度限制</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>开始调用</h3>
+                            <p>使用 OpenAI 兼容格式发起请求，无需修改现有代码</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="steps-visual">
+                    <div class="visual-card">
+                        <div class="visual-card-header">
+                            <div class="visual-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                                </svg>
+                            </div>
+                            <div class="visual-card-info">
+                                <h4>我的 API Key</h4>
+                                <p>已创建于 2 分钟前</p>
+                            </div>
+                        </div>
+                        <div class="api-key-display">
+                            <div>
+                                <div class="api-key-label">API Key</div>
+                                <div class="api-key-value">sk-proj-xxxx...xxxx</div>
+                            </div>
+                            <button class="api-key-copy">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="usage-stats">
+                            <div class="usage-stat">
+                                <div class="usage-stat-label">今日调用</div>
+                                <div class="usage-stat-value">1,234 <span>次</span></div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-label">剩余额度</div>
+                                <div class="usage-stat-value">$99.50</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 底部 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                            </svg>
+                        </div>
+                        <span class="logo-text">New API</span>
+                    </div>
+                    <p>企业级 AI 模型接口管理平台，让 AI 能力触手可及。</p>
+                </div>
+                <div class="footer-links">
+                    <h4>产品</h4>
+                    <ul>
+                        <li><a href="/pricing">定价方案</a></li>
+                        <li><a href="/models">模型列表</a></li>
+                        <li><a href="/status">服务状态</a></li>
+                        <li><a href="/changelog">更新日志</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>开发者</h4>
+                    <ul>
+                        <li><a href="/docs">API 文档</a></li>
+                        <li><a href="/docs/quickstart">快速开始</a></li>
+                        <li><a href="/docs/sdks">SDK</a></li>
+                        <li><a href="/docs/examples">示例代码</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>关于</h4>
+                    <ul>
+                        <li><a href="/about">关于我们</a></li>
+                        <li><a href="/blog">博客</a></li>
+                        <li><a href="/contact">联系我们</a></li>
+                        <li><a href="/terms">服务条款</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copy">
+                    © 2026 New API · 由 <a href="https://github.com/QuantumNous/new-api">New API</a> 团队开源
+                </div>
+                <div class="footer-social">
+                    <a href="https://github.com/QuantumNous/new-api" target="_blank" title="GitHub">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com" target="_blank" title="Twitter">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                    <a href="https://discord.com" target="_blank" title="Discord">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 网络节点动画脚本 -->
+    <script>
+        // 动态网络节点背景
+        const canvas = document.getElementById('network-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let nodes = [];
+        let mouse = { x: null, y: null };
+
+        const config = {
+            nodeCount: 80,
+            nodeSize: 2,
+            connectionDistance: 150,
+            nodeSpeed: 0.3,
+            nodeColor: 'rgba(59, 130, 246, 0.6)',
+            lineColor: 'rgba(59, 130, 246, 0.15)',
+            mouseRadius: 200
+        };
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function createNodes() {
+            nodes = [];
+            for (let i = 0; i < config.nodeCount; i++) {
+                nodes.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * config.nodeSpeed,
+                    vy: (Math.random() - 0.5) * config.nodeSpeed,
+                    size: Math.random() * config.nodeSize + 1
+                });
+            }
+        }
+
+        function drawNode(node) {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+            ctx.fillStyle = config.nodeColor;
+            ctx.fill();
+        }
+
+        function drawLine(node1, node2, distance) {
+            const opacity = 1 - (distance / config.connectionDistance);
+            ctx.beginPath();
+            ctx.moveTo(node1.x, node1.y);
+            ctx.lineTo(node2.x, node2.y);
+            ctx.strokeStyle = `rgba(59, 130, 246, ${opacity * 0.15})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        function update() {
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+
+                if (node.x < 0 || node.x > width) node.vx *= -1;
+                if (node.y < 0 || node.y > height) node.vy *= -1;
+
+                // 鼠标交互
+                if (mouse.x && mouse.y) {
+                    const dx = mouse.x - node.x;
+                    const dy = mouse.y - node.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < config.mouseRadius) {
+                        const force = (config.mouseRadius - dist) / config.mouseRadius;
+                        node.vx -= dx * force * 0.01;
+                        node.vy -= dy * force * 0.01;
+                    }
+                }
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            // 绘制连接线
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < config.connectionDistance) {
+                        drawLine(nodes[i], nodes[j], distance);
+                    }
+                }
+            }
+
+            // 绘制节点
+            nodes.forEach(drawNode);
+        }
+
+        function animate() {
+            update();
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        // 初始化
+        resize();
+        createNodes();
+        animate();
+
+        // 事件监听
+        window.addEventListener('resize', () => {
+            resize();
+            createNodes();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        // 减少动画检测
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            canvas.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
