@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo 设计方案</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        h1 { text-align: center; margin-bottom: 2rem; font-weight: 300; }
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .logo-card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        .logo-card h3 {
+            margin-top: 1rem;
+            font-weight: 400;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .logo-preview {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            display: inline-block;
+        }
+        .logo-preview.light {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+        .logo-preview.gradient {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+        }
+        svg { display: block; }
+    </style>
+</head>
+<body>
+    <h1>MOLI API Logo 设计方案</h1>
+    <div class="logo-grid">
+        <!-- 方案 1: 极简几何 -->
+        <div class="logo-card">
+            <div class="logo-preview">
+                <svg width="180" height="50" viewBox="0 0 180 50">
+                    <!-- M -->
+                    <path d="M10 40 L10 12 L22 26 L34 12 L34 40" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- O - 带缺口 -->
+                    <circle cx="54" cy="26" r="13" stroke="white" stroke-width="2.5" fill="none" stroke-dasharray="75 7"/>
+                    <!-- L -->
+                    <path d="M80 12 L80 40 L96 40" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- I -->
+                    <line x1="112" y1="12" x2="112" y2="40" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="112" cy="6" r="2.5" fill="#3B82F6"/>
+                    <!-- API -->
+                    <text x="155" y="30" font-family="Arial" font-size="11" font-weight="600" fill="#3B82F6" text-anchor="middle">API</text>
+                </svg>
+            </div>
+            <h3>方案 1：极简几何</h3>
+        </div>
+
+        <!-- 方案 2: 连笔风格 -->
+        <div class="logo-card">
+            <div class="logo-preview">
+                <svg width="180" height="50" viewBox="0 0 180 50">
+                    <!-- MOLI 连笔 -->
+                    <path d="M8 38 L8 14 L18 26 L28 14 L28 38 M38 26 A10 10 0 1 1 38 25.9 M58 14 L58 38 L72 38 M82 14 L82 38"
+                          stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- 点 -->
+                    <circle cx="82" cy="8" r="2.5" fill="#06B6D4"/>
+                    <!-- 分隔线 -->
+                    <line x1="100" y1="14" x2="100" y2="38" stroke="#334155" stroke-width="1"/>
+                    <!-- API -->
+                    <text x="140" y="32" font-family="Arial" font-size="14" font-weight="500" fill="white" text-anchor="middle" letter-spacing="3">API</text>
+                </svg>
+            </div>
+            <h3>方案 2：分隔风格</h3>
+        </div>
+
+        <!-- 方案 3: 圆角方块 -->
+        <div class="logo-card">
+            <div class="logo-preview gradient">
+                <svg width="180" height="50" viewBox="0 0 180 50">
+                    <rect x="5" y="8" width="34" height="34" rx="8" fill="rgba(255,255,255,0.2)"/>
+                    <text x="22" y="32" font-family="Arial" font-size="20" font-weight="700" fill="white" text-anchor="middle">M</text>
+                    <text x="115" y="32" font-family="Arial" font-size="18" font-weight="600" fill="white" text-anchor="middle" letter-spacing="2">MOLI API</text>
+                </svg>
+            </div>
+            <h3>方案 3：图标 + 文字</h3>
+        </div>
+
+        <!-- 方案 4: 纯文字现代 -->
+        <div class="logo-card">
+            <div class="logo-preview">
+                <svg width="180" height="50" viewBox="0 0 180 50">
+                    <text x="90" y="34" font-family="Arial" font-size="24" font-weight="300" fill="white" text-anchor="middle" letter-spacing="8">MOLI</text>
+                    <rect x="130" y="16" width="40" height="18" rx="3" fill="#3B82F6"/>
+                    <text x="150" y="29" font-family="Arial" font-size="10" font-weight="600" fill="white" text-anchor="middle">API</text>
+                </svg>
+            </div>
+            <h3>方案 4：现代简约</h3>
+        </div>
+
+        <!-- 方案 5: 类似参考图风格 -->
+        <div class="logo-card">
+            <div class="logo-preview" style="background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);">
+                <svg width="180" height="50" viewBox="0 0 180 50">
+                    <!-- M - 参考风格 -->
+                    <path d="M15 38 L15 14 L27 28 L39 14 L39 38" stroke="white" stroke-width="2" fill="none" stroke-linecap="square"/>
+                    <!-- O - 缺口圆 -->
+                    <path d="M65 25 A12 12 0 1 1 53 25" stroke="white" stroke-width="2" fill="none" stroke-linecap="square"/>
+                    <!-- L -->
+                    <path d="M85 14 L85 38 L100 38" stroke="white" stroke-width="2" fill="none" stroke-linecap="square"/>
+                    <!-- I - 无点 -->
+                    <line x1="115" y1="14" x2="115" y2="38" stroke="white" stroke-width="2"/>
+                    <!-- 竖线分隔 -->
+                    <rect x="135" y="10" width="3" height="30" fill="rgba(255,255,255,0.3)"/>
+                    <!-- API -->
+                    <text x="160" y="30" font-family="Arial" font-size="10" font-weight="400" fill="white" text-anchor="middle" letter-spacing="2">API</text>
+                </svg>
+            </div>
+            <h3>方案 5：参考图风格</h3>
+        </div>
+
+        <!-- 方案 6: 渐变文字 -->
+        <div class="logo-card">
+            <div class="logo-preview">
+                <svg width="180" height="50" viewBox="0 0 180 50">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#3B82F6"/>
+                            <stop offset="100%" style="stop-color:#8B5CF6"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="90" y="35" font-family="Arial" font-size="28" font-weight="700" fill="url(#grad1)" text-anchor="middle" letter-spacing="4">MOLI</text>
+                    <text x="90" y="46" font-family="Arial" font-size="8" font-weight="400" fill="#64748B" text-anchor="middle" letter-spacing="6">AI MODEL GATEWAY</text>
+                </svg>
+            </div>
+            <h3>方案 6：渐变 + 副标题</h3>
+        </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 3rem; color: #666;">选择你喜欢的方案，我可以进一步调整细节</p>
+</body>
+</html>
