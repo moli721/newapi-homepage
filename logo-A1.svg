@@ -1,45 +1,51 @@
-<svg width="320" height="400" viewBox="0 0 320 400" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="e1-dark" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2a2a2a"/>
-      <stop offset="100%" style="stop-color:#404040"/>
-    </linearGradient>
-    <linearGradient id="e1-mid" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#505050"/>
-      <stop offset="100%" style="stop-color:#353535"/>
-    </linearGradient>
-    <linearGradient id="e1-light" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#454545"/>
-      <stop offset="100%" style="stop-color:#707070"/>
-    </linearGradient>
-    <linearGradient id="e1-peak" x1="50%" y1="0%" x2="50%" y2="100%">
-      <stop offset="0%" style="stop-color:#888888"/>
+    <linearGradient id="face-left" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6a6a6a"/>
       <stop offset="100%" style="stop-color:#4a4a4a"/>
     </linearGradient>
+    <linearGradient id="face-right" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8a8a8a"/>
+      <stop offset="100%" style="stop-color:#5a5a5a"/>
+    </linearGradient>
+    <linearGradient id="face-top" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#909090"/>
+      <stop offset="100%" style="stop-color:#c8c8c8"/>
+    </linearGradient>
+    <linearGradient id="face-peak" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f0f0"/>
+      <stop offset="100%" style="stop-color:#a0a0a0"/>
+    </linearGradient>
   </defs>
-  <rect width="320" height="400" fill="transparent"/>
 
-  <!-- 主体 - 锐利切割 -->
-  <polygon points="40,280 40,60 82,40 82,258" fill="url(#e1-dark)"/>
-  <polygon points="40,60 82,40 138,112 96,132" fill="url(#e1-light)"/>
+  <!-- 3D M - 完美居中 -->
+  <g transform="translate(100, 100)">
+    <!-- 左侧面 -->
+    <polygon points="-75,85 -75,-55 -50,-70 -50,70" fill="url(#face-left)"/>
+    <!-- 左顶面 -->
+    <polygon points="-75,-55 -50,-70 -10,-25 -35,-10" fill="url(#face-top)"/>
 
-  <polygon points="96,132 138,112 160,162" fill="url(#e1-peak)"/>
-  <polygon points="160,162 182,112 224,132" fill="url(#e1-light)"/>
+    <!-- 中峰左 -->
+    <polygon points="-35,-10 -10,-25 0,10" fill="url(#face-peak)"/>
+    <!-- 中峰右 -->
+    <polygon points="0,10 10,-25 35,-10" fill="url(#face-top)"/>
 
-  <polygon points="182,112 238,40 280,60 224,132" fill="url(#e1-light)"/>
-  <polygon points="238,40 280,60 280,280 238,258" fill="url(#e1-mid)"/>
+    <!-- 右顶面 -->
+    <polygon points="10,-25 50,-70 75,-55 35,-10" fill="url(#face-top)"/>
+    <!-- 右侧面 -->
+    <polygon points="50,-70 75,-55 75,85 50,70" fill="url(#face-right)"/>
 
-  <polygon points="40,280 82,258 82,172 96,160 96,258 50,280" fill="url(#e1-dark)"/>
-  <polygon points="224,160 224,258 270,280 280,280 238,258 238,172" fill="url(#e1-mid)"/>
+    <!-- 左腿 -->
+    <polygon points="-75,85 -50,70 -50,5 -35,-8 -35,70 -65,85" fill="url(#face-left)"/>
+    <!-- 右腿 -->
+    <polygon points="35,-8 35,70 65,85 75,85 50,70 50,5" fill="url(#face-right)"/>
 
-  <!-- 核心空洞 -->
-  <polygon points="160,162 160,215 128,188 96,160" fill="#1a1a1a"/>
-  <polygon points="160,162 160,215 192,188 224,160" fill="#222222"/>
+    <!-- 中心深度 -->
+    <polygon points="0,10 0,45 -20,28 -35,-8" fill="#2a2a2a"/>
+    <polygon points="0,10 0,45 20,28 35,-8" fill="#333"/>
 
-  <!-- 边缘高光 -->
-  <line x1="40" y1="60" x2="82" y2="40" stroke="#999" stroke-width="1.5"/>
-  <line x1="138" y1="112" x2="160" y2="162" stroke="#aaa" stroke-width="1.5"/>
-  <line x1="182" y1="112" x2="160" y2="162" stroke="#999" stroke-width="1.5"/>
-
-  <text x="160" y="355" font-family="Arial, sans-serif" font-size="20" font-weight="100" fill="#888" text-anchor="middle" letter-spacing="16">MOLI API</text>
+    <!-- 顶部高光线 -->
+    <path d="M-75,-55 L-50,-70 L-10,-25 L0,10 L10,-25 L50,-70 L75,-55"
+          fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linejoin="round"/>
+  </g>
 </svg>
