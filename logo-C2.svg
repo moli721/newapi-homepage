@@ -1,21 +1,21 @@
 <svg width="320" height="400" viewBox="0 0 320 400" xmlns="http://www.w3.org/2000/svg">
-  <rect width="320" height="400" fill="#000"/>
+  <rect width="320" height="400" fill="transparent"/>
 
   <!-- 多层线框 - 外层 -->
   <path d="M45 75 L90 48 L145 122 L160 168 L175 122 L230 48 L275 75 L275 280 L230 258 L230 178 L218 163 L160 220 L102 163 L90 178 L90 258 L45 280 Z"
-        fill="none" stroke="#1a1a1a" stroke-width="1"/>
+        fill="none" stroke="#444" stroke-width="1"/>
 
   <!-- 多层线框 - 中层 -->
   <path d="M50 72 L92 47 L145 120 L160 165 L175 120 L228 47 L270 72 L270 277 L228 255 L228 175 L215 160 L160 217 L105 160 L92 175 L92 255 L50 277 Z"
-        fill="none" stroke="#2a2a2a" stroke-width="1.5"/>
+        fill="none" stroke="#666" stroke-width="1.5"/>
 
   <!-- 多层线框 - 内层（主体） -->
   <path d="M55 70 L93 45 L145 118 L160 162 L175 118 L227 45 L265 70 L265 275 L227 253 L227 173 L212 158 L160 215 L108 158 L93 173 L93 253 L55 275 Z"
-        fill="none" stroke="#444" stroke-width="2.5"/>
+        fill="none" stroke="#888" stroke-width="2.5"/>
 
   <!-- 顶部强调 -->
   <path d="M55 70 L93 45 L145 118 L160 162 L175 118 L227 45 L265 70"
-        fill="none" stroke="#555" stroke-width="3"/>
+        fill="none" stroke="#aaa" stroke-width="3"/>
 
-  <text x="160" y="355" font-family="Arial, sans-serif" font-size="20" font-weight="100" fill="#333" text-anchor="middle" letter-spacing="16">MOLI API</text>
+  <text x="160" y="355" font-family="Arial, sans-serif" font-size="20" font-weight="100" fill="#888" text-anchor="middle" letter-spacing="16">MOLI API</text>
 </svg>
